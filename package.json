@@ -1,0 +1,20 @@
+{
+  "name": "jev-decision-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Exploratory Jev decision experiments via the OpenRouter Decisions API",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "start": "node src/run.mjs",
+    "dry-run": "node src/run.mjs --dry-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ronaldoflima/jev-decision-lab.git"
+  }
+}

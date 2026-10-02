@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tentamos fazer o Jev conversar. Depois, colocamos suas decisões à prova.</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#faf9f6;color:#242424;font-family:Georgia,"Times New Roman",serif;font-size:20px;line-height:1.75}main{max-width:760px;padding:65px 25px 90px;margin:auto}h1,h2,.meta,.subtitle,nav,footer{font-family:system-ui,sans-serif}h1{font-size:clamp(34px,6vw,49px);line-height:1.12;letter-spacing:-1.5px;margin:15px 0 22px}h2{font-size:27px;line-height:1.3;margin:42px 0 18px;letter-spacing:-.4px}.subtitle{font-size:23px;line-height:1.5;color:#626262}.meta{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#737373}p{margin:24px 0}blockquote{margin:32px 0;padding:8px 0 8px 24px;border-left:3px solid #28806c;font-size:24px;font-style:italic}a{color:#147764;text-underline-offset:4px}.note{padding:20px 24px;background:#eef2ed;border-radius:8px;font-size:17px}.data{font-family:system-ui,sans-serif;border:1px solid #d4d8d1;padding:18px 22px;border-radius:8px;font-size:16px;line-height:1.65}table{width:100%;border-collapse:collapse}td,th{text-align:left;border-bottom:1px solid #d4d8d1;padding:10px 8px}nav{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;margin-top:25px}button{font:inherit;background:none;border:1px solid #b6c4bc;padding:7px 12px;border-radius:20px;color:#315b4c;cursor:pointer}footer{border-top:1px solid #d7d7d3;margin-top:42px;padding-top:20px;color:#686868;font-size:14px} @media print{body{background:white}main{padding:15px 0;font-size:16px}nav{display:none}h1{font-size:35px}h2{break-after:avoid}}
+</style></head><body><main>
+<div class="meta">Artigo · laboratório de IA · rascunho para publicação</div>
+<h1>Tentamos fazer o Jev conversar. Depois, colocamos suas decisões à prova.</h1>
+<p class="subtitle">Um experimento com letras, palavras e um entregador virtual revelou a diferença entre escolher uma opção e sustentar uma sequência de boas decisões.</p>
+<nav><a href="experimento-jev.html">Abrir o experimento interativo</a><button onclick="window.print()">Imprimir ou salvar como PDF</button></nav>
+<p>A ideia parecia simples: se um modelo consegue escolher entre alternativas, talvez consiga construir uma conversa escolhendo uma letra por vez.</p>
+<p>Enviamos uma mensagem, oferecemos o alfabeto como opções e pedimos a próxima letra da resposta. Acrescentamos a escolha ao texto e repetimos o processo. Era uma tentativa de transformar decisões discretas em geração de linguagem.</p>
+<p>O modelo era o Jev, da TypeSafe. Sua interface recebe um estado e perguntas com respostas possíveis. Em vez de produzir texto livre, retorna escolhas e probabilidades. A documentação apresenta esse formato como uma base para decisões estruturadas.</p>
+<p>As avaliações do Jev foram feitas pela Decisions API do OpenRouter. Em cada rodada, a chamada HTTP enviava o modelo, o estado e as perguntas tipadas. O código aplicava a ação retornada e acrescentava registros de custo e baixa confiança, sem reescrever a decisão do modelo.</p>
+<p>A questão do experimento não era se o Jev substitui um chatbot. Era mais específica: o que acontece quando usamos essa interface para executar uma tarefa que exige muitas escolhas encadeadas?</p>
+
+<h2>Primeiro, as letras</h2>
+<p>A primeira versão tinha um problema na própria definição da tarefa: pedia uma continuação do texto enviado, quando a intenção era construir uma resposta à mensagem. Corrigimos isso separando a mensagem do usuário da resposta acumulada.</p>
+<p>O alfabeto sozinho também era insuficiente para formar frases. Incluímos espaço, pontuação, acentos e uma opção de encerrar. Ainda assim, uma das execuções começou com “a” e continuou escolhendo espaços, sempre com baixa confiança.</p>
+<p>A primeira tentativa de corrigir esse comportamento foi simplificar a instrução e usar a baixa confiança como um sinal para reconsiderar a mesma posição. O caractere não era acrescentado à resposta; a próxima chamada informava a tentativa anterior e pedia uma nova escolha. O Jev repetiu “a” nas três tentativas, sem superar o limiar de confiança.</p>
+<p>Passamos então a acrescentar cada escolha, mesmo com baixa confiança, e incluímos exemplos de respostas parciais e seus próximos caracteres. Houve um pequeno avanço: para uma saudação, o Jev formou “oi”, acrescentou cinco espaços e encerrou. Em outra mensagem, começou com “é” e voltou a repetir espaços.</p>
+<p>Cada ajuste atacava uma dificuldade diferente: a definição da tarefa, as opções disponíveis, a clareza da instrução e o bloqueio por confiança. Nenhuma dessas versões produziu uma conversa consistente nas execuções observadas.</p>
+
+<h2>Depois, as palavras</h2>
+<p>Para reduzir o número de etapas, passamos a escolher uma palavra por rodada. Selecionamos palavras frequentes em português brasileiro de um corpus de legendas e usamos 254 delas, reservando uma opção para encerrar. Cada palavra escolhida recebia um espaço antes de ser enviada novamente.</p>
+<p>As primeiras respostas eram curtas: “sou” ou “bem”, seguidas de encerramento. Acrescentamos à instrução um mínimo de cinco palavras. A resposta então chegou ao tamanho pedido, mas ficou pouco natural: “bem também você como está”.</p>
+<p>Na pergunta mais elaborada, sobre como organizar tarefas ao longo do dia, o modelo repetiu “pode” até atingir o limite da execução.</p>
+<blockquote>Conseguir controlar o comprimento de uma resposta não significa conseguir controlar sua coerência.</blockquote>
+<p>O vocabulário limitado era uma restrição importante. Uma resposta pode exigir palavras que simplesmente não estão disponíveis. Mas a repetição também apareceu quando voltamos aos caracteres, que permitem formar muitas palavras sem depender de um catálogo fechado.</p>
+
+<h2>Variar a escolha não resolveu a conversa</h2>
+<p>Comparamos duas estratégias: selecionar sempre a opção mais provável e sortear uma opção a partir das probabilidades retornadas pelo Jev.</p>
+<p>O sorteio poderia escapar da repetição da alternativa dominante. Isso aconteceu parcialmente: surgiram caracteres mais variados. Mas variedade não virou linguagem coerente.</p>
+<p>Também fizemos a comparação em inglês, porque a documentação informa que esse é o principal idioma de treinamento do modelo. Na execução final, limitada a quinze caracteres por variante, a escolha mais provável gerou “h” seguido de espaços. A variante por sorteio gerou uma mistura de letras e espaços, sem uma resposta útil.</p>
+<p>Esses testes foram exploratórios. Não usamos uma bateria grande de mensagens, múltiplas sementes ou uma avaliação estatística. Portanto, o resultado sustenta uma conclusão sobre as execuções observadas, não uma afirmação universal de que esse método nunca poderia funcionar.</p>
+
+<h2>Uma pergunta melhor: ele consegue planejar?</h2>
+<p>O próximo experimento mudou a tarefa. Em vez de pedir texto, colocamos o Jev para controlar um entregador em um mundo pequeno, com regras explícitas.</p>
+<p>O mapa tinha seis locais. O entregador começava na base com nove unidades de bateria. Cada rua consumia a mesma quantidade de tempo e energia. Entregar levava um minuto, enquanto recarregar levava três. Só a base e um posto permitiam recarga.</p>
+<p>Três encomendas precisavam chegar a destinos diferentes: hospital até o minuto sete, loja até o minuto dezesseis e museu até o minuto vinte e oito. No minuto doze, a rua entre loja e museu fecharia. O agente só receberia esse aviso depois de o relógio alcançar o momento do bloqueio.</p>
+<p>A cada rodada, o simulador calculava as ações legais e enviava o estado ao Jev. O modelo escolhia uma ação. O simulador aplicava o efeito e repetia o ciclo. A rota não recebeu correções humanas durante a execução.</p>
+
+<h2>Duas entregas, uma escolha sem saída</h2>
+<p>O início foi bom. O Jev saiu da base, passou pela praça e chegou ao hospital. A primeira entrega terminou no minuto seis, dentro do prazo.</p>
+<p>Naquele ponto, restavam quatro unidades de bateria. O modelo escolheu ir à loja, gastando duas. Entregou a segunda encomenda no minuto nove.</p>
+<p>O problema apareceu depois. Da loja, o posto ficava a quatro unidades de distância. O entregador só tinha duas. Seu único deslocamento legal era voltar ao hospital, consumindo o restante da bateria.</p>
+<p>No minuto onze, o agente estava no hospital com bateria zero. Não podia se mover nem recarregar. O episódio terminou com duas entregas concluídas.</p>
+<p>Ele também não chegou a observar o bloqueio da rua, que aconteceria no minuto doze. Portanto, essa execução não avaliou sua capacidade de reagir ao imprevisto. A falha aconteceu antes: na preservação de energia para continuar.</p>
+
+<h2>O detalhe mais revelador foi a confiança</h2>
+<p>A última escolha retornou confiança de 100%. Isso parece estranho diante de uma rota que termina presa, mas havia apenas uma ação legal naquela chamada.</p>
+<p>A decisão anterior já tinha reduzido o conjunto de possibilidades a uma saída ruim. Ter certeza sobre a única opção restante não significa ter feito um bom plano.</p>
+<blockquote>Uma decisão local pode ser inevitável porque uma decisão anterior eliminou as alternativas melhores.</blockquote>
+<p>Por isso, a avaliação precisa acompanhar o resultado do episódio, não apenas os indicadores de cada chamada. O retorno do modelo e o sucesso da tarefa medem coisas diferentes.</p>
+
+<h2>Havia uma solução viável</h2>
+<p>Uma busca exata no simulador encontrou uma rota que conclui as três entregas no minuto vinte e oito. O passo decisivo é ir do hospital ao posto antes de seguir para a loja.</p>
+<p>Essa recarga preserva a possibilidade de voltar ao posto depois da segunda entrega. Com outra recarga, o entregador alcança o museu dentro do prazo, contornando a rua bloqueada.</p>
+<p>A referência conhece o bloqueio futuro desde o início; o Jev só o descobre ao alcançar o momento do evento. Essa diferença precisa aparecer na comparação. Ainda assim, o problema que prendeu o Jev não dependia da informação futura: as distâncias, a bateria disponível e os pontos de recarga já estavam no estado enviado.</p>
+<div class="data"><table><thead><tr><th>Execução</th><th>Entregas no prazo</th><th>Desfecho</th></tr></thead><tbody><tr><td>Jev</td><td>2 de 3</td><td>Sem bateria no hospital, no minuto 11</td></tr><tr><td>Referência com informação completa</td><td>3 de 3</td><td>Conclui no minuto 28</td></tr></tbody></table></div>
+
+<h2>Primeira tentativa de recuperação: desfazer a última ação</h2><p>Acrescentamos uma opção de desfazer a última ação. Ela restaura posição, tempo, bateria, energia consumida e entregas, com três créditos por episódio. Desfazimentos consecutivos permitem voltar várias ações. Custos de API e eventos já observados permanecem conhecidos.</p><p>Repetimos o teste com todos os campos enviados ao Jev em inglês. O agente realizou doze decisões, usou os três créditos e terminou novamente com duas entregas, sem bateria no hospital. Desfez uma entrega na loja e voltou a realizá-la; depois desfez retornos ao hospital e voltou a escolher o mesmo deslocamento.</p><p>Restaurar o estado funcionou, mas o agente não voltou o suficiente para alcançar o ponto em que ainda podia ir ao posto. No modo manual do relatório, é possível desfazer três ações consecutivas, recuperar esse estado e concluir as três entregas no minuto vinte e oito.</p><p>O custo reportado dessa execução foi US$ 0.00066860. Uma execução anterior com desfazer, antes de traduzir um nome interno no resumo da ação, custou US$ 0.00067607. São novos episódios, com instruções e opções diferentes; o resultado não isola estatisticamente o efeito de desfazer.</p><h2>Segunda tentativa: tornar explícito até onde voltar</h2><p>Uma nova versão tornou explícitas três escolhas: desfazer uma ação, desfazer duas ações ou desfazer três ações. Cada opção mostra ao Jev o estado que será recuperado e as ações que serão removidas. Mantivemos o orçamento de três ações desfeitas, em vez de permitir três reversões de tamanho arbitrário.</p><p>Nessa execução, o agente concluiu as três entregas no minuto vinte e oito, com dezessete decisões. Ele voltou duas vezes uma ação para recuperar o hospital, depois escolheu ir ao posto e recarregar. Um terceiro desfazer restaurou a ida à loja, que ele repetiu. Ao final, cumpriu os prazos das três encomendas.</p><p>As opções de desfazer duas ou três ações ficaram disponíveis, mas não foram escolhidas. Portanto, esse resultado demonstra recuperação neste episódio, sem demonstrar que o modelo usou uma reversão profunda em uma única decisão.</p><p>Também houve instruções mais explícitas e estados previstos para cada opção. O agente preservou informações do bloqueio após voltar o relógio. Não é possível atribuir a melhora somente à quantidade de opções com uma execução por configuração.</p><p>O custo reportado da nova execução foi US$ 0.00128696. O relatório preserva as três rotas e permite desfazer uma, duas ou três ações no modo manual.</p><h2>Como os resultados mudaram</h2>
+<div class="data"><table><thead><tr><th>Configuração</th><th>Resultado observado</th><th>O que mudou</th></tr></thead><tbody>
+<tr><td>Geração por caracteres</td><td>Respostas curtas ou repetitivas</td><td>Opções, instruções, exemplos e política de confiança</td></tr>
+<tr><td>Geração por palavras</td><td>Encerramento precoce ou repetição</td><td>Vocabulário frequente e mínimo de cinco palavras</td></tr>
+<tr><td>Caracteres com sorteio e inglês</td><td>Mais variedade, sem resposta coerente</td><td>Amostragem das probabilidades e idioma</td></tr>
+<tr><td>Entregas sem desfazer</td><td>2 de 3; preso no minuto 11</td><td>Estado explícito e ações com consequências</td></tr>
+<tr><td>Entregas com desfazer 1 ação</td><td>2 de 3; preso no minuto 11</td><td>Três créditos para voltar decisões</td></tr>
+<tr><td>Entregas com desfazer 1, 2 ou 3</td><td>3 de 3 no minuto 28</td><td>Profundidades e estados recuperados explícitos</td></tr>
+</tbody></table></div>
+<p>O resultado final foi melhor, mas não veio de uma única alteração isolada. Mudaram a interface de ações, as instruções e a apresentação dos estados recuperados. Na última execução, o conhecimento do bloqueio também permaneceu depois de uma reversão do relógio.</p>
+
+<h2>Quanto custou</h2>
+<p>Os custos reportados nas execuções com registros completos foram:</p>
+<div class="data"><table><thead><tr><th>Execução</th><th>Custo reportado</th></tr></thead><tbody>
+<tr><td>Comparação final de geração em inglês</td><td>US$ 0,00129238</td></tr>
+<tr><td>Entregas sem desfazer</td><td>US$ 0,00029690</td></tr>
+<tr><td>Primeiro teste com desfazer 1, antes de normalizar um nome interno</td><td>US$ 0,00067607</td></tr>
+<tr><td>Desfazer 1, todo conteúdo enviado em inglês</td><td>US$ 0,00066860</td></tr>
+<tr><td>Opções de desfazer 1, 2 ou 3</td><td>US$ 0,00128696</td></tr>
+</tbody></table></div>
+<p>Depois da inspeção da implementação, os registros locais permitiram recuperar 229 chamadas bem-sucedidas dos identificadores deste experimento, somando US$ 0,020591004 de custo reportado. O total inclui as tentativas por letras, palavras, sorteio e planejamento, inclusive execuções interrompidas que haviam recebido resposta. É uma soma dos custos retornados pela API, não uma conciliação de fatura; não inclui voz, análise ou produção dos artefatos.</p>
+
+<h2>Conclusão: o que funcionou depois das tentativas</h2>
+<p>A geração de conversa por letras ou palavras não produziu respostas consistentes nos testes realizados. O sorteio trouxe variedade, mas não coerência; trocar o idioma e ajustar as instruções também não resolveu esse problema nas execuções observadas.</p>
+<p>No cenário de entregas, o resultado mudou ao longo das tentativas. O Jev primeiro ficou preso após duas entregas. Com desfazer apenas uma ação, continuou repetindo escolhas que o deixavam sem saída. Na versão com três profundidades de reversão e os estados recuperados explícitos, conseguiu voltar a uma situação viável e concluir as três entregas no prazo.</p>
+<p>Essa última execução demonstra uma recuperação bem-sucedida neste cenário. Não demonstra que o Jev usou uma reversão profunda: ele escolheu desfazer uma ação três vezes, sem selecionar as opções de duas ou três. Tampouco mostra aprendizado permanente do modelo; cada chamada recebeu o estado e o histórico do episódio.</p>
+<p>O término no minuto vinte e oito usa o relógio virtual do simulador, que pode ser restaurado. Para concluir, o agente tomou dezessete decisões, enquanto a referência percorre onze ações. Chegar ao mesmo horário final não significa ter a mesma eficiência de execução.</p>
+<p>Foi possível fazer a tarefa funcionar nesta configuração, mas o experimento ainda é exploratório. Houve uma execução por configuração, com instruções e opções diferentes, e a referência conhece o bloqueio desde o início. Para medir robustez, seria preciso repetir episódios, variar mapas e a ordem das alternativas e comparar agentes com o mesmo acesso à informação.</p>
+<p>A principal observação é que a forma de apresentar a decisão merece ser avaliada junto com o modelo. Neste episódio, estados explícitos, consequências mensuráveis e a possibilidade de revisar ações acompanharam uma recuperação que as versões anteriores não conseguiram realizar. O resultado justifica uma avaliação maior; sozinho, não estabelece confiabilidade geral.</p>
+<p class="note">O <a href="experimento-jev.html">laboratório interativo</a> preserva as execuções, suas probabilidades e a referência. Também permite testar sua própria rota e desfazer uma, duas ou três ações. Funciona localmente e não faz novas chamadas ao Jev.</p>
+
+<footer>
+<p>Fontes: <a href="https://openrouter.ai/blog/insights/what-is-jev/">Jev e Decisions API no OpenRouter</a>; <a href="https://docs.typesafe.ai/models">documentação oficial do Jev</a>; <a href="https://github.com/hermitdave/FrequencyWords">FrequencyWords e corpus OpenSubtitles</a>; registros das chamadas e estados do simulador incluídos no relatório interativo.</p>
+<p>Cenário de entregas desenvolvido neste experimento, a partir da discussão com o usuário e com auxílio do Codex. Não foi adaptado de um benchmark específico. Rascunho não publicado no Medium.</p>
+</footer></main></body></html>

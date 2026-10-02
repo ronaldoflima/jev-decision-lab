@@ -1,0 +1,3679 @@
+{
+  "scenario": {
+    "title": "Entregas com bateria limitada e bloqueio de rua",
+    "rules": {
+      "start": "Base",
+      "battery_capacity": 9,
+      "time_limit": 30,
+      "travel": "Tempo e bateria consumida iguais ao peso da rua.",
+      "delivery_time": 1,
+      "recharge_time": 3,
+      "recharge": "Somente na Base ou no Posto; enche a bateria.",
+      "objective": "Maximizar entregas dentro do prazo; desempatar por menor tempo e depois menor energia.",
+      "event_visibility": "O bloqueio é revelado ao agente quando o relógio alcança 12; antes disso, não recebe informações do futuro."
+    },
+    "nodes": [
+      "Base",
+      "Praça",
+      "Posto",
+      "Hospital",
+      "Loja",
+      "Museu"
+    ],
+    "edges": [
+      [
+        "Base",
+        "Praça",
+        2
+      ],
+      [
+        "Base",
+        "Posto",
+        3
+      ],
+      [
+        "Praça",
+        "Posto",
+        2
+      ],
+      [
+        "Praça",
+        "Hospital",
+        3
+      ],
+      [
+        "Hospital",
+        "Posto",
+        2
+      ],
+      [
+        "Posto",
+        "Loja",
+        4
+      ],
+      [
+        "Hospital",
+        "Loja",
+        2
+      ],
+      [
+        "Loja",
+        "Museu",
+        3
+      ],
+      [
+        "Praça",
+        "Museu",
+        5
+      ],
+      [
+        "Posto",
+        "Museu",
+        4
+      ]
+    ],
+    "deliveries": [
+      {
+        "at": "Hospital",
+        "deadline": 7
+      },
+      {
+        "at": "Loja",
+        "deadline": 16
+      },
+      {
+        "at": "Museu",
+        "deadline": 28
+      }
+    ],
+    "events": [
+      {
+        "time": 12,
+        "edge": [
+          "Loja",
+          "Museu"
+        ],
+        "effect": "Rua fechada pelo restante do episódio; travessias iniciadas antes de 12 podem terminar."
+      }
+    ]
+  },
+  "baseline": {
+    "score": 3,
+    "t": 28,
+    "energy": 19,
+    "path": [
+      {
+        "action": "travel",
+        "from": "Base",
+        "to": "Praça",
+        "t": 2,
+        "battery": 7
+      },
+      {
+        "action": "travel",
+        "from": "Praça",
+        "to": "Hospital",
+        "t": 5,
+        "battery": 4
+      },
+      {
+        "action": "deliver",
+        "at": "Hospital",
+        "t": 6
+      },
+      {
+        "action": "travel",
+        "from": "Hospital",
+        "to": "Posto",
+        "t": 8,
+        "battery": 2
+      },
+      {
+        "action": "recharge",
+        "at": "Posto",
+        "t": 11
+      },
+      {
+        "action": "travel",
+        "from": "Posto",
+        "to": "Loja",
+        "t": 15,
+        "battery": 5
+      },
+      {
+        "action": "deliver",
+        "at": "Loja",
+        "t": 16
+      },
+      {
+        "action": "travel",
+        "from": "Loja",
+        "to": "Posto",
+        "t": 20,
+        "battery": 1
+      },
+      {
+        "action": "recharge",
+        "at": "Posto",
+        "t": 23
+      },
+      {
+        "action": "travel",
+        "from": "Posto",
+        "to": "Museu",
+        "t": 27,
+        "battery": 5
+      },
+      {
+        "action": "deliver",
+        "at": "Museu",
+        "t": 28
+      }
+    ],
+    "battery": 5
+  },
+  "names": {
+    "Base": "Base",
+    "Praça": "Square",
+    "Posto": "Charging station",
+    "Hospital": "Hospital",
+    "Loja": "Shop",
+    "Museu": "Museum"
+  },
+  "state": {
+    "at": "Hospital",
+    "time": 11,
+    "battery": 0,
+    "delivered": [
+      "Hospital",
+      "Loja"
+    ],
+    "energy": 9
+  },
+  "history": [
+    {
+      "choice": "move_Square",
+      "action": {
+        "id": "move_Square",
+        "kind": "travel",
+        "to": "Praça",
+        "time": 2,
+        "energy": 2
+      },
+      "before": {
+        "at": "Base",
+        "time": 0,
+        "battery": 9,
+        "delivered": [],
+        "energy": 0
+      },
+      "after": {
+        "at": "Praça",
+        "time": 2,
+        "battery": 7,
+        "delivered": [],
+        "energy": 2
+      },
+      "confidence": 0.77,
+      "probabilities": {
+        "move_Charging_station": 0.11,
+        "move_Square": 0.89
+      },
+      "low_confidence": false,
+      "cost": 4.5528e-05
+    },
+    {
+      "choice": "move_Hospital",
+      "action": {
+        "id": "move_Hospital",
+        "kind": "travel",
+        "to": "Hospital",
+        "time": 3,
+        "energy": 3
+      },
+      "before": {
+        "at": "Praça",
+        "time": 2,
+        "battery": 7,
+        "delivered": [],
+        "energy": 2
+      },
+      "after": {
+        "at": "Hospital",
+        "time": 5,
+        "battery": 4,
+        "delivered": [],
+        "energy": 5
+      },
+      "confidence": 0.65,
+      "probabilities": {
+        "move_Hospital": 0.73,
+        "move_Museum": 0.02,
+        "move_Base": 0.06,
+        "move_Charging_station": 0.19
+      },
+      "low_confidence": true,
+      "cost": 5.229e-05
+    },
+    {
+      "choice": "deliver",
+      "action": {
+        "id": "deliver",
+        "kind": "deliver",
+        "time": 1
+      },
+      "before": {
+        "at": "Hospital",
+        "time": 5,
+        "battery": 4,
+        "delivered": [],
+        "energy": 5
+      },
+      "after": {
+        "at": "Hospital",
+        "time": 6,
+        "battery": 4,
+        "delivered": [
+          "Hospital"
+        ],
+        "energy": 5
+      },
+      "confidence": 0.87,
+      "probabilities": {
+        "move_Shop": 0.03,
+        "deliver": 0.89,
+        "move_Square": 0.01,
+        "move_Charging_station": 0.07
+      },
+      "low_confidence": false,
+      "cost": 5.25e-05
+    },
+    {
+      "choice": "move_Shop",
+      "action": {
+        "id": "move_Shop",
+        "kind": "travel",
+        "to": "Loja",
+        "time": 2,
+        "energy": 2
+      },
+      "before": {
+        "at": "Hospital",
+        "time": 6,
+        "battery": 4,
+        "delivered": [
+          "Hospital"
+        ],
+        "energy": 5
+      },
+      "after": {
+        "at": "Loja",
+        "time": 8,
+        "battery": 2,
+        "delivered": [
+          "Hospital"
+        ],
+        "energy": 7
+      },
+      "confidence": 0.35,
+      "probabilities": {
+        "move_Square": 0.03,
+        "move_Shop": 0.57,
+        "move_Charging_station": 0.4
+      },
+      "low_confidence": true,
+      "cost": 5.1576e-05
+    },
+    {
+      "choice": "deliver",
+      "action": {
+        "id": "deliver",
+        "kind": "deliver",
+        "time": 1
+      },
+      "before": {
+        "at": "Loja",
+        "time": 8,
+        "battery": 2,
+        "delivered": [
+          "Hospital"
+        ],
+        "energy": 7
+      },
+      "after": {
+        "at": "Loja",
+        "time": 9,
+        "battery": 2,
+        "delivered": [
+          "Hospital",
+          "Loja"
+        ],
+        "energy": 7
+      },
+      "confidence": 0.53,
+      "probabilities": {
+        "move_Hospital": 0.24,
+        "deliver": 0.76
+      },
+      "low_confidence": true,
+      "cost": 4.851e-05
+    },
+    {
+      "choice": "move_Hospital",
+      "action": {
+        "id": "move_Hospital",
+        "kind": "travel",
+        "to": "Hospital",
+        "time": 2,
+        "energy": 2
+      },
+      "before": {
+        "at": "Loja",
+        "time": 9,
+        "battery": 2,
+        "delivered": [
+          "Hospital",
+          "Loja"
+        ],
+        "energy": 7
+      },
+      "after": {
+        "at": "Hospital",
+        "time": 11,
+        "battery": 0,
+        "delivered": [
+          "Hospital",
+          "Loja"
+        ],
+        "energy": 9
+      },
+      "confidence": 1,
+      "probabilities": {
+        "move_Hospital": 1
+      },
+      "low_confidence": false,
+      "cost": 4.6494e-05
+    }
+  ],
+  "cost": 0.00029689800000000003,
+  "done": true,
+  "limit": 20,
+  "english_sampling": {
+    "message": "When a person has many things to do in one day, how can they choose what to do first and organize their time?",
+    "criteria": {
+      "a": "The next character is \"a\".",
+      "b": "The next character is \"b\".",
+      "c": "The next character is \"c\".",
+      "d": "The next character is \"d\".",
+      "e": "The next character is \"e\".",
+      "f": "The next character is \"f\".",
+      "g": "The next character is \"g\".",
+      "h": "The next character is \"h\".",
+      "i": "The next character is \"i\".",
+      "j": "The next character is \"j\".",
+      "k": "The next character is \"k\".",
+      "l": "The next character is \"l\".",
+      "m": "The next character is \"m\".",
+      "n": "The next character is \"n\".",
+      "o": "The next character is \"o\".",
+      "p": "The next character is \"p\".",
+      "q": "The next character is \"q\".",
+      "r": "The next character is \"r\".",
+      "s": "The next character is \"s\".",
+      "t": "The next character is \"t\".",
+      "u": "The next character is \"u\".",
+      "v": "The next character is \"v\".",
+      "w": "The next character is \"w\".",
+      "x": "The next character is \"x\".",
+      "y": "The next character is \"y\".",
+      "z": "The next character is \"z\".",
+      "SPACE": "The next character is a space.",
+      ".": "The next character is \".\".",
+      ",": "The next character is \",\".",
+      "!": "The next character is \"!\".",
+      "?": "The next character is \"?\".",
+      ";": "The next character is \";\".",
+      ":": "The next character is \":\".",
+      "-": "The next character is \"-\".",
+      "END": "The answer is complete. End the reply."
+    },
+    "limit": 15,
+    "arms": [
+      {
+        "name": "most_probable",
+        "response": "h              ",
+        "ended": false,
+        "steps": 15,
+        "low": 15
+      },
+      {
+        "name": "sampled",
+        "response": "a b baicc c  e ",
+        "ended": false,
+        "steps": 15,
+        "low": 15
+      }
+    ],
+    "seed": 1324954562,
+    "logs": [
+      {
+        "arm": "most_probable",
+        "selected": "h",
+        "cost": 4.2966e-05,
+        "confidence": 0.52
+      },
+      {
+        "arm": "sampled",
+        "selected": "a",
+        "cost": 4.2966e-05,
+        "confidence": 0.47
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.3008e-05,
+        "confidence": 0.36
+      },
+      {
+        "arm": "sampled",
+        "selected": "SPACE",
+        "cost": 4.3008e-05,
+        "confidence": 0.27
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.36
+      },
+      {
+        "arm": "sampled",
+        "selected": "b",
+        "cost": 4.305e-05,
+        "confidence": 0.3
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.37
+      },
+      {
+        "arm": "sampled",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.32
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.37
+      },
+      {
+        "arm": "sampled",
+        "selected": "b",
+        "cost": 4.3092e-05,
+        "confidence": 0.27
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.45
+      },
+      {
+        "arm": "sampled",
+        "selected": "a",
+        "cost": 4.3092e-05,
+        "confidence": 0.41
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.36
+      },
+      {
+        "arm": "sampled",
+        "selected": "i",
+        "cost": 4.3092e-05,
+        "confidence": 0.34
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.36
+      },
+      {
+        "arm": "sampled",
+        "selected": "c",
+        "cost": 4.3092e-05,
+        "confidence": 0.37
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.39
+      },
+      {
+        "arm": "sampled",
+        "selected": "c",
+        "cost": 4.3134e-05,
+        "confidence": 0.27
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.29
+      },
+      {
+        "arm": "sampled",
+        "selected": "SPACE",
+        "cost": 4.3134e-05,
+        "confidence": 0.27
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.33
+      },
+      {
+        "arm": "sampled",
+        "selected": "c",
+        "cost": 4.3176e-05,
+        "confidence": 0.28
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.34
+      },
+      {
+        "arm": "sampled",
+        "selected": "SPACE",
+        "cost": 4.3176e-05,
+        "confidence": 0.34
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.32
+      },
+      {
+        "arm": "sampled",
+        "selected": "SPACE",
+        "cost": 4.3218e-05,
+        "confidence": 0.35
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.34
+      },
+      {
+        "arm": "sampled",
+        "selected": "e",
+        "cost": 4.3218e-05,
+        "confidence": 0.32
+      },
+      {
+        "arm": "most_probable",
+        "selected": "SPACE",
+        "cost": 4.305e-05,
+        "confidence": 0.33
+      },
+      {
+        "arm": "sampled",
+        "selected": "SPACE",
+        "cost": 4.326e-05,
+        "confidence": 0.36
+      }
+    ],
+    "cost": 0.0012923820000000001,
+    "calls": 30
+  },
+  "earlier_recorded_portuguese_cost": 0.001250802,
+  "known_initial_cost": 0.000113904,
+  "undo_run": {
+    "scenario": {
+      "title": "Entregas com bateria limitada e bloqueio de rua",
+      "rules": {
+        "start": "Base",
+        "battery_capacity": 9,
+        "time_limit": 30,
+        "travel": "Tempo e bateria consumida iguais ao peso da rua.",
+        "delivery_time": 1,
+        "recharge_time": 3,
+        "recharge": "Somente na Base ou no Posto; enche a bateria.",
+        "objective": "Maximizar entregas dentro do prazo; desempatar por menor tempo e depois menor energia.",
+        "event_visibility": "O bloqueio é revelado ao agente quando o relógio alcança 12; antes disso, não recebe informações do futuro."
+      },
+      "nodes": [
+        "Base",
+        "Praça",
+        "Posto",
+        "Hospital",
+        "Loja",
+        "Museu"
+      ],
+      "edges": [
+        [
+          "Base",
+          "Praça",
+          2
+        ],
+        [
+          "Base",
+          "Posto",
+          3
+        ],
+        [
+          "Praça",
+          "Posto",
+          2
+        ],
+        [
+          "Praça",
+          "Hospital",
+          3
+        ],
+        [
+          "Hospital",
+          "Posto",
+          2
+        ],
+        [
+          "Posto",
+          "Loja",
+          4
+        ],
+        [
+          "Hospital",
+          "Loja",
+          2
+        ],
+        [
+          "Loja",
+          "Museu",
+          3
+        ],
+        [
+          "Praça",
+          "Museu",
+          5
+        ],
+        [
+          "Posto",
+          "Museu",
+          4
+        ]
+      ],
+      "deliveries": [
+        {
+          "at": "Hospital",
+          "deadline": 7
+        },
+        {
+          "at": "Loja",
+          "deadline": 16
+        },
+        {
+          "at": "Museu",
+          "deadline": 28
+        }
+      ],
+      "events": [
+        {
+          "time": 12,
+          "edge": [
+            "Loja",
+            "Museu"
+          ],
+          "effect": "Rua fechada pelo restante do episódio; travessias iniciadas antes de 12 podem terminar."
+        }
+      ]
+    },
+    "baseline": {
+      "score": 3,
+      "t": 28,
+      "energy": 19,
+      "path": [
+        {
+          "action": "travel",
+          "from": "Base",
+          "to": "Praça",
+          "t": 2,
+          "battery": 7
+        },
+        {
+          "action": "travel",
+          "from": "Praça",
+          "to": "Hospital",
+          "t": 5,
+          "battery": 4
+        },
+        {
+          "action": "deliver",
+          "at": "Hospital",
+          "t": 6
+        },
+        {
+          "action": "travel",
+          "from": "Hospital",
+          "to": "Posto",
+          "t": 8,
+          "battery": 2
+        },
+        {
+          "action": "recharge",
+          "at": "Posto",
+          "t": 11
+        },
+        {
+          "action": "travel",
+          "from": "Posto",
+          "to": "Loja",
+          "t": 15,
+          "battery": 5
+        },
+        {
+          "action": "deliver",
+          "at": "Loja",
+          "t": 16
+        },
+        {
+          "action": "travel",
+          "from": "Loja",
+          "to": "Posto",
+          "t": 20,
+          "battery": 1
+        },
+        {
+          "action": "recharge",
+          "at": "Posto",
+          "t": 23
+        },
+        {
+          "action": "travel",
+          "from": "Posto",
+          "to": "Museu",
+          "t": 27,
+          "battery": 5
+        },
+        {
+          "action": "deliver",
+          "at": "Museu",
+          "t": 28
+        }
+      ],
+      "battery": 5
+    },
+    "names": {
+      "Base": "Base",
+      "Praça": "Square",
+      "Posto": "Charging station",
+      "Hospital": "Hospital",
+      "Loja": "Shop",
+      "Museu": "Museum"
+    },
+    "state": {
+      "at": "Hospital",
+      "time": 11,
+      "battery": 0,
+      "delivered": [
+        "Hospital",
+        "Loja"
+      ],
+      "energy": 9
+    },
+    "history": [
+      {
+        "choice": "move_Square",
+        "action": {
+          "id": "move_Square",
+          "kind": "travel",
+          "to": "Praça",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Base",
+          "time": 0,
+          "battery": 9,
+          "delivered": [],
+          "energy": 0
+        },
+        "after": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        },
+        "confidence": 0.87,
+        "probabilities": {
+          "move_Square": 0.94,
+          "move_Charging_station": 0.06
+        },
+        "low_confidence": false,
+        "cost": 4.6452e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "move_Hospital",
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 3,
+          "energy": 3
+        },
+        "before": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        },
+        "confidence": 0.7,
+        "probabilities": {
+          "move_Museum": 0.03,
+          "move_Base": 0.04,
+          "undo": 0.03,
+          "move_Hospital": 0.76,
+          "move_Charging_station": 0.14
+        },
+        "low_confidence": false,
+        "cost": 5.88e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "deliver",
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "confidence": 0.88,
+        "probabilities": {
+          "move_Shop": 0.04,
+          "deliver": 0.9,
+          "undo": 0.02,
+          "move_Charging_station": 0.03,
+          "move_Square": 0.01
+        },
+        "low_confidence": false,
+        "cost": 5.9178e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "move_Shop",
+        "action": {
+          "id": "move_Shop",
+          "kind": "travel",
+          "to": "Loja",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "after": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "confidence": 0.59,
+        "probabilities": {
+          "undo": 0.04,
+          "move_Charging_station": 0.25,
+          "move_Shop": 0.69,
+          "move_Square": 0.02
+        },
+        "low_confidence": true,
+        "cost": 5.7624e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "deliver",
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "confidence": 0.7,
+        "probabilities": {
+          "deliver": 0.8,
+          "move_Hospital": 0.05,
+          "undo": 0.15
+        },
+        "low_confidence": false,
+        "cost": 5.586e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "undo",
+        "action": {
+          "id": "undo",
+          "kind": "undo",
+          "restored_state": {
+            "at": "Loja",
+            "time": 8,
+            "battery": 2,
+            "delivered": [
+              "Hospital"
+            ],
+            "energy": 7
+          }
+        },
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "confidence": 0.23,
+        "probabilities": {
+          "undo": 0.61,
+          "move_Hospital": 0.39
+        },
+        "low_confidence": true,
+        "cost": 5.4306e-05,
+        "undos_used": 1,
+        "known_blockage": false,
+        "undone": {
+          "before": {
+            "at": "Loja",
+            "time": 8,
+            "battery": 2,
+            "delivered": [
+              "Hospital"
+            ],
+            "energy": 7
+          },
+          "action": {
+            "id": "deliver",
+            "kind": "deliver",
+            "time": 1
+          },
+          "after": {
+            "at": "Loja",
+            "time": 9,
+            "battery": 2,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 7
+          }
+        }
+      },
+      {
+        "choice": "deliver",
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "confidence": 0.18,
+        "probabilities": {
+          "deliver": 0.45,
+          "undo": 0.32,
+          "move_Hospital": 0.23
+        },
+        "low_confidence": true,
+        "cost": 5.7792e-05,
+        "undos_used": 1,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "move_Hospital",
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        },
+        "confidence": 0.04,
+        "probabilities": {
+          "move_Hospital": 0.52,
+          "undo": 0.48
+        },
+        "low_confidence": true,
+        "cost": 5.6238e-05,
+        "undos_used": 1,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "undo",
+        "action": {
+          "id": "undo",
+          "kind": "undo",
+          "restored_state": {
+            "at": "Loja",
+            "time": 9,
+            "battery": 2,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 7
+          }
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "confidence": 1,
+        "probabilities": {
+          "undo": 1
+        },
+        "low_confidence": false,
+        "cost": 5.5524e-05,
+        "undos_used": 2,
+        "known_blockage": false,
+        "undone": {
+          "before": {
+            "at": "Loja",
+            "time": 9,
+            "battery": 2,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 7
+          },
+          "action": {
+            "id": "move_Hospital",
+            "kind": "travel",
+            "to": "Hospital",
+            "time": 2,
+            "energy": 2
+          },
+          "after": {
+            "at": "Hospital",
+            "time": 11,
+            "battery": 0,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 9
+          }
+        }
+      },
+      {
+        "choice": "move_Hospital",
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        },
+        "confidence": 0.19,
+        "probabilities": {
+          "undo": 0.41,
+          "move_Hospital": 0.59
+        },
+        "low_confidence": true,
+        "cost": 5.7246e-05,
+        "undos_used": 2,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "undo",
+        "action": {
+          "id": "undo",
+          "kind": "undo",
+          "restored_state": {
+            "at": "Loja",
+            "time": 9,
+            "battery": 2,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 7
+          }
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "confidence": 1,
+        "probabilities": {
+          "undo": 1
+        },
+        "low_confidence": false,
+        "cost": 5.544e-05,
+        "undos_used": 3,
+        "known_blockage": false,
+        "undone": {
+          "before": {
+            "at": "Loja",
+            "time": 9,
+            "battery": 2,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 7
+          },
+          "action": {
+            "id": "move_Hospital",
+            "kind": "travel",
+            "to": "Hospital",
+            "time": 2,
+            "energy": 2
+          },
+          "after": {
+            "at": "Hospital",
+            "time": 11,
+            "battery": 0,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 9
+          }
+        }
+      },
+      {
+        "choice": "move_Hospital",
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        },
+        "confidence": 1,
+        "probabilities": {
+          "move_Hospital": 1
+        },
+        "low_confidence": false,
+        "cost": 5.4138e-05,
+        "undos_used": 3,
+        "known_blockage": false,
+        "undone": null
+      }
+    ],
+    "stack": [
+      {
+        "before": {
+          "at": "Base",
+          "time": 0,
+          "battery": 9,
+          "delivered": [],
+          "energy": 0
+        },
+        "action": {
+          "id": "move_Square",
+          "kind": "travel",
+          "to": "Praça",
+          "time": 2,
+          "energy": 2
+        },
+        "after": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        }
+      },
+      {
+        "before": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        },
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 3,
+          "energy": 3
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        }
+      },
+      {
+        "before": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        },
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        }
+      },
+      {
+        "before": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "action": {
+          "id": "move_Shop",
+          "kind": "travel",
+          "to": "Loja",
+          "time": 2,
+          "energy": 2
+        },
+        "after": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        }
+      },
+      {
+        "before": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        }
+      },
+      {
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 2,
+          "energy": 2
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        }
+      }
+    ],
+    "cost": 0.000668598,
+    "done": true,
+    "limit": 30,
+    "undo_limit": 3,
+    "undos_used": 3,
+    "known_blockage": false,
+    "end_reason": "no_legal_action"
+  },
+  "undo_previous_run": {
+    "scenario": {
+      "title": "Entregas com bateria limitada e bloqueio de rua",
+      "rules": {
+        "start": "Base",
+        "battery_capacity": 9,
+        "time_limit": 30,
+        "travel": "Tempo e bateria consumida iguais ao peso da rua.",
+        "delivery_time": 1,
+        "recharge_time": 3,
+        "recharge": "Somente na Base ou no Posto; enche a bateria.",
+        "objective": "Maximizar entregas dentro do prazo; desempatar por menor tempo e depois menor energia.",
+        "event_visibility": "O bloqueio é revelado ao agente quando o relógio alcança 12; antes disso, não recebe informações do futuro."
+      },
+      "nodes": [
+        "Base",
+        "Praça",
+        "Posto",
+        "Hospital",
+        "Loja",
+        "Museu"
+      ],
+      "edges": [
+        [
+          "Base",
+          "Praça",
+          2
+        ],
+        [
+          "Base",
+          "Posto",
+          3
+        ],
+        [
+          "Praça",
+          "Posto",
+          2
+        ],
+        [
+          "Praça",
+          "Hospital",
+          3
+        ],
+        [
+          "Hospital",
+          "Posto",
+          2
+        ],
+        [
+          "Posto",
+          "Loja",
+          4
+        ],
+        [
+          "Hospital",
+          "Loja",
+          2
+        ],
+        [
+          "Loja",
+          "Museu",
+          3
+        ],
+        [
+          "Praça",
+          "Museu",
+          5
+        ],
+        [
+          "Posto",
+          "Museu",
+          4
+        ]
+      ],
+      "deliveries": [
+        {
+          "at": "Hospital",
+          "deadline": 7
+        },
+        {
+          "at": "Loja",
+          "deadline": 16
+        },
+        {
+          "at": "Museu",
+          "deadline": 28
+        }
+      ],
+      "events": [
+        {
+          "time": 12,
+          "edge": [
+            "Loja",
+            "Museu"
+          ],
+          "effect": "Rua fechada pelo restante do episódio; travessias iniciadas antes de 12 podem terminar."
+        }
+      ]
+    },
+    "baseline": {
+      "score": 3,
+      "t": 28,
+      "energy": 19,
+      "path": [
+        {
+          "action": "travel",
+          "from": "Base",
+          "to": "Praça",
+          "t": 2,
+          "battery": 7
+        },
+        {
+          "action": "travel",
+          "from": "Praça",
+          "to": "Hospital",
+          "t": 5,
+          "battery": 4
+        },
+        {
+          "action": "deliver",
+          "at": "Hospital",
+          "t": 6
+        },
+        {
+          "action": "travel",
+          "from": "Hospital",
+          "to": "Posto",
+          "t": 8,
+          "battery": 2
+        },
+        {
+          "action": "recharge",
+          "at": "Posto",
+          "t": 11
+        },
+        {
+          "action": "travel",
+          "from": "Posto",
+          "to": "Loja",
+          "t": 15,
+          "battery": 5
+        },
+        {
+          "action": "deliver",
+          "at": "Loja",
+          "t": 16
+        },
+        {
+          "action": "travel",
+          "from": "Loja",
+          "to": "Posto",
+          "t": 20,
+          "battery": 1
+        },
+        {
+          "action": "recharge",
+          "at": "Posto",
+          "t": 23
+        },
+        {
+          "action": "travel",
+          "from": "Posto",
+          "to": "Museu",
+          "t": 27,
+          "battery": 5
+        },
+        {
+          "action": "deliver",
+          "at": "Museu",
+          "t": 28
+        }
+      ],
+      "battery": 5
+    },
+    "names": {
+      "Base": "Base",
+      "Praça": "Square",
+      "Posto": "Charging station",
+      "Hospital": "Hospital",
+      "Loja": "Shop",
+      "Museu": "Museum"
+    },
+    "state": {
+      "at": "Hospital",
+      "time": 11,
+      "battery": 0,
+      "delivered": [
+        "Hospital",
+        "Loja"
+      ],
+      "energy": 9
+    },
+    "history": [
+      {
+        "choice": "move_Square",
+        "action": {
+          "id": "move_Square",
+          "kind": "travel",
+          "to": "Praça",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Base",
+          "time": 0,
+          "battery": 9,
+          "delivered": [],
+          "energy": 0
+        },
+        "after": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        },
+        "confidence": 0.88,
+        "probabilities": {
+          "move_Charging_station": 0.06,
+          "move_Square": 0.94
+        },
+        "low_confidence": false,
+        "cost": 4.6452e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "move_Hospital",
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 3,
+          "energy": 3
+        },
+        "before": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        },
+        "confidence": 0.67,
+        "probabilities": {
+          "move_Museum": 0.02,
+          "move_Hospital": 0.74,
+          "undo": 0.05,
+          "move_Charging_station": 0.15,
+          "move_Base": 0.04
+        },
+        "low_confidence": true,
+        "cost": 5.922e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "deliver",
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "confidence": 0.88,
+        "probabilities": {
+          "move_Shop": 0.03,
+          "deliver": 0.91,
+          "move_Charging_station": 0.03,
+          "undo": 0.02,
+          "move_Square": 0.01
+        },
+        "low_confidence": false,
+        "cost": 5.9556e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "move_Shop",
+        "action": {
+          "id": "move_Shop",
+          "kind": "travel",
+          "to": "Loja",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "after": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "confidence": 0.52,
+        "probabilities": {
+          "move_Square": 0.02,
+          "move_Charging_station": 0.27,
+          "move_Shop": 0.63,
+          "undo": 0.08
+        },
+        "low_confidence": true,
+        "cost": 5.7918e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "deliver",
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "confidence": 0.53,
+        "probabilities": {
+          "undo": 0.22,
+          "deliver": 0.6799999999999999,
+          "move_Hospital": 0.1
+        },
+        "low_confidence": true,
+        "cost": 5.6238e-05,
+        "undos_used": 0,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "undo",
+        "action": {
+          "id": "undo",
+          "kind": "undo",
+          "restored_state": {
+            "at": "Loja",
+            "time": 8,
+            "battery": 2,
+            "delivered": [
+              "Hospital"
+            ],
+            "energy": 7
+          }
+        },
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "confidence": 0.25,
+        "probabilities": {
+          "move_Hospital": 0.37,
+          "undo": 0.63
+        },
+        "low_confidence": true,
+        "cost": 5.46e-05,
+        "undos_used": 1,
+        "known_blockage": false,
+        "undone": {
+          "before": {
+            "at": "Loja",
+            "time": 8,
+            "battery": 2,
+            "delivered": [
+              "Hospital"
+            ],
+            "energy": 7
+          },
+          "action": {
+            "id": "deliver",
+            "kind": "deliver",
+            "time": 1
+          },
+          "after": {
+            "at": "Loja",
+            "time": 9,
+            "battery": 2,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 7
+          }
+        }
+      },
+      {
+        "choice": "deliver",
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "confidence": 0.13,
+        "probabilities": {
+          "deliver": 0.42,
+          "undo": 0.33,
+          "move_Hospital": 0.25
+        },
+        "low_confidence": true,
+        "cost": 5.817e-05,
+        "undos_used": 1,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "undo",
+        "action": {
+          "id": "undo",
+          "kind": "undo",
+          "restored_state": {
+            "at": "Loja",
+            "time": 8,
+            "battery": 2,
+            "delivered": [
+              "Hospital"
+            ],
+            "energy": 7
+          }
+        },
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "confidence": 0,
+        "probabilities": {
+          "move_Hospital": 0.5,
+          "undo": 0.5
+        },
+        "low_confidence": true,
+        "cost": 5.6532e-05,
+        "undos_used": 2,
+        "known_blockage": false,
+        "undone": {
+          "before": {
+            "at": "Loja",
+            "time": 8,
+            "battery": 2,
+            "delivered": [
+              "Hospital"
+            ],
+            "energy": 7
+          },
+          "action": {
+            "id": "deliver",
+            "kind": "deliver",
+            "time": 1
+          },
+          "after": {
+            "at": "Loja",
+            "time": 9,
+            "battery": 2,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 7
+          }
+        }
+      },
+      {
+        "choice": "deliver",
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "confidence": 0.06,
+        "probabilities": {
+          "undo": 0.32,
+          "deliver": 0.37,
+          "move_Hospital": 0.31
+        },
+        "low_confidence": true,
+        "cost": 6.0102e-05,
+        "undos_used": 2,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "move_Hospital",
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        },
+        "confidence": 0.16,
+        "probabilities": {
+          "undo": 0.42,
+          "move_Hospital": 0.58
+        },
+        "low_confidence": true,
+        "cost": 5.7372e-05,
+        "undos_used": 2,
+        "known_blockage": false,
+        "undone": null
+      },
+      {
+        "choice": "undo",
+        "action": {
+          "id": "undo",
+          "kind": "undo",
+          "restored_state": {
+            "at": "Loja",
+            "time": 9,
+            "battery": 2,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 7
+          }
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "confidence": 1,
+        "probabilities": {
+          "undo": 1
+        },
+        "low_confidence": false,
+        "cost": 5.565e-05,
+        "undos_used": 3,
+        "known_blockage": false,
+        "undone": {
+          "before": {
+            "at": "Loja",
+            "time": 9,
+            "battery": 2,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 7
+          },
+          "action": {
+            "id": "move_Hospital",
+            "kind": "travel",
+            "to": "Hospital",
+            "time": 2,
+            "energy": 2
+          },
+          "after": {
+            "at": "Hospital",
+            "time": 11,
+            "battery": 0,
+            "delivered": [
+              "Hospital",
+              "Loja"
+            ],
+            "energy": 9
+          }
+        }
+      },
+      {
+        "choice": "move_Hospital",
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        },
+        "confidence": 1,
+        "probabilities": {
+          "move_Hospital": 1
+        },
+        "low_confidence": false,
+        "cost": 5.4264e-05,
+        "undos_used": 3,
+        "known_blockage": false,
+        "undone": null
+      }
+    ],
+    "stack": [
+      {
+        "before": {
+          "at": "Base",
+          "time": 0,
+          "battery": 9,
+          "delivered": [],
+          "energy": 0
+        },
+        "action": {
+          "id": "move_Square",
+          "kind": "travel",
+          "to": "Praça",
+          "time": 2,
+          "energy": 2
+        },
+        "after": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        }
+      },
+      {
+        "before": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        },
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 3,
+          "energy": 3
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        }
+      },
+      {
+        "before": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        },
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        }
+      },
+      {
+        "before": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "action": {
+          "id": "move_Shop",
+          "kind": "travel",
+          "to": "Loja",
+          "time": 2,
+          "energy": 2
+        },
+        "after": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        }
+      },
+      {
+        "before": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "action": {
+          "id": "deliver",
+          "kind": "deliver",
+          "time": 1
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        }
+      },
+      {
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "action": {
+          "id": "move_Hospital",
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 2,
+          "energy": 2
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 11,
+          "battery": 0,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 9
+        }
+      }
+    ],
+    "cost": 0.000676074,
+    "done": true,
+    "limit": 30,
+    "undo_limit": 3,
+    "undos_used": 3,
+    "known_blockage": false,
+    "end_reason": "no_legal_action"
+  },
+  "multi_undo_run": {
+    "scenario": {
+      "title": "Entregas com bateria limitada e bloqueio de rua",
+      "rules": {
+        "start": "Base",
+        "battery_capacity": 9,
+        "time_limit": 30,
+        "travel": "Tempo e bateria consumida iguais ao peso da rua.",
+        "delivery_time": 1,
+        "recharge_time": 3,
+        "recharge": "Somente na Base ou no Posto; enche a bateria.",
+        "objective": "Maximizar entregas dentro do prazo; desempatar por menor tempo e depois menor energia.",
+        "event_visibility": "O bloqueio é revelado ao agente quando o relógio alcança 12; antes disso, não recebe informações do futuro."
+      },
+      "nodes": [
+        "Base",
+        "Praça",
+        "Posto",
+        "Hospital",
+        "Loja",
+        "Museu"
+      ],
+      "edges": [
+        [
+          "Base",
+          "Praça",
+          2
+        ],
+        [
+          "Base",
+          "Posto",
+          3
+        ],
+        [
+          "Praça",
+          "Posto",
+          2
+        ],
+        [
+          "Praça",
+          "Hospital",
+          3
+        ],
+        [
+          "Hospital",
+          "Posto",
+          2
+        ],
+        [
+          "Posto",
+          "Loja",
+          4
+        ],
+        [
+          "Hospital",
+          "Loja",
+          2
+        ],
+        [
+          "Loja",
+          "Museu",
+          3
+        ],
+        [
+          "Praça",
+          "Museu",
+          5
+        ],
+        [
+          "Posto",
+          "Museu",
+          4
+        ]
+      ],
+      "deliveries": [
+        {
+          "at": "Hospital",
+          "deadline": 7
+        },
+        {
+          "at": "Loja",
+          "deadline": 16
+        },
+        {
+          "at": "Museu",
+          "deadline": 28
+        }
+      ],
+      "events": [
+        {
+          "time": 12,
+          "edge": [
+            "Loja",
+            "Museu"
+          ],
+          "effect": "Rua fechada pelo restante do episódio; travessias iniciadas antes de 12 podem terminar."
+        }
+      ]
+    },
+    "baseline": {
+      "score": 3,
+      "t": 28,
+      "energy": 19,
+      "path": [
+        {
+          "action": "travel",
+          "from": "Base",
+          "to": "Praça",
+          "t": 2,
+          "battery": 7
+        },
+        {
+          "action": "travel",
+          "from": "Praça",
+          "to": "Hospital",
+          "t": 5,
+          "battery": 4
+        },
+        {
+          "action": "deliver",
+          "at": "Hospital",
+          "t": 6
+        },
+        {
+          "action": "travel",
+          "from": "Hospital",
+          "to": "Posto",
+          "t": 8,
+          "battery": 2
+        },
+        {
+          "action": "recharge",
+          "at": "Posto",
+          "t": 11
+        },
+        {
+          "action": "travel",
+          "from": "Posto",
+          "to": "Loja",
+          "t": 15,
+          "battery": 5
+        },
+        {
+          "action": "deliver",
+          "at": "Loja",
+          "t": 16
+        },
+        {
+          "action": "travel",
+          "from": "Loja",
+          "to": "Posto",
+          "t": 20,
+          "battery": 1
+        },
+        {
+          "action": "recharge",
+          "at": "Posto",
+          "t": 23
+        },
+        {
+          "action": "travel",
+          "from": "Posto",
+          "to": "Museu",
+          "t": 27,
+          "battery": 5
+        },
+        {
+          "action": "deliver",
+          "at": "Museu",
+          "t": 28
+        }
+      ],
+      "battery": 5
+    },
+    "names": {
+      "Base": "Base",
+      "Praça": "Square",
+      "Posto": "Charging station",
+      "Hospital": "Hospital",
+      "Loja": "Shop",
+      "Museu": "Museum"
+    },
+    "state": {
+      "at": "Museu",
+      "time": 28,
+      "battery": 5,
+      "delivered": [
+        "Hospital",
+        "Loja",
+        "Museu"
+      ],
+      "energy": 19
+    },
+    "history": [
+      {
+        "action": {
+          "kind": "travel",
+          "to": "Praça",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Base",
+          "time": 0,
+          "battery": 9,
+          "delivered": [],
+          "energy": 0
+        },
+        "after": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        },
+        "undos_used": 0,
+        "known_blockage": false,
+        "choice": "move_Square",
+        "confidence": 0.9,
+        "probabilities": {
+          "move_Charging_station": 0.05,
+          "move_Square": 0.95
+        },
+        "low_confidence": false,
+        "cost": 4.8426e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 3,
+          "energy": 3
+        },
+        "before": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        },
+        "undos_used": 0,
+        "known_blockage": false,
+        "choice": "move_Hospital",
+        "confidence": 0.71,
+        "probabilities": {
+          "move_Base": 0.03,
+          "move_Museum": 0.01,
+          "move_Hospital": 0.76,
+          "move_Charging_station": 0.08,
+          "undo_1": 0.12
+        },
+        "low_confidence": false,
+        "cost": 6.4974e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "undos_used": 0,
+        "known_blockage": false,
+        "choice": "deliver",
+        "confidence": 0.82,
+        "probabilities": {
+          "move_Square": 0,
+          "move_Shop": 0.02,
+          "undo_1": 0.05,
+          "move_Charging_station": 0.01,
+          "deliver": 0.86,
+          "undo_2": 0.06
+        },
+        "low_confidence": false,
+        "cost": 7.602e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "travel",
+          "to": "Loja",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "after": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "undos_used": 0,
+        "known_blockage": false,
+        "choice": "move_Shop",
+        "confidence": 0.62,
+        "probabilities": {
+          "undo_1": 0.04,
+          "move_Square": 0.01,
+          "move_Shop": 0.69,
+          "undo_2": 0.04,
+          "undo_3": 0.07,
+          "move_Charging_station": 0.15
+        },
+        "low_confidence": true,
+        "cost": 8.5722e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "undos_used": 0,
+        "known_blockage": false,
+        "choice": "deliver",
+        "confidence": 0.31,
+        "probabilities": {
+          "deliver": 0.45,
+          "undo_3": 0.23,
+          "undo_1": 0.25,
+          "undo_2": 0.03,
+          "move_Hospital": 0.04
+        },
+        "low_confidence": true,
+        "cost": 8.484e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "undo",
+          "steps": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 9,
+          "battery": 2,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "undos_used": 1,
+        "known_blockage": false,
+        "choice": "undo_1",
+        "confidence": 0.26,
+        "probabilities": {
+          "undo_1": 0.44,
+          "undo_3": 0.14,
+          "undo_2": 0.2,
+          "move_Hospital": 0.22
+        },
+        "low_confidence": true,
+        "cost": 8.4588e-05,
+        "undoTargets": [
+          {
+            "before": {
+              "at": "Loja",
+              "time": 8,
+              "battery": 2,
+              "delivered": [
+                "Hospital"
+              ],
+              "energy": 7
+            },
+            "action": {
+              "kind": "deliver",
+              "time": 1
+            },
+            "after": {
+              "at": "Loja",
+              "time": 9,
+              "battery": 2,
+              "delivered": [
+                "Hospital",
+                "Loja"
+              ],
+              "energy": 7
+            }
+          }
+        ]
+      },
+      {
+        "action": {
+          "kind": "undo",
+          "steps": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "undos_used": 2,
+        "known_blockage": false,
+        "choice": "undo_1",
+        "confidence": 0.14,
+        "probabilities": {
+          "undo_1": 0.36,
+          "move_Hospital": 0.2,
+          "undo_2": 0.15,
+          "deliver": 0.29
+        },
+        "low_confidence": true,
+        "cost": 7.9758e-05,
+        "undoTargets": [
+          {
+            "before": {
+              "at": "Hospital",
+              "time": 6,
+              "battery": 4,
+              "delivered": [
+                "Hospital"
+              ],
+              "energy": 5
+            },
+            "action": {
+              "kind": "travel",
+              "to": "Loja",
+              "time": 2,
+              "energy": 2
+            },
+            "after": {
+              "at": "Loja",
+              "time": 8,
+              "battery": 2,
+              "delivered": [
+                "Hospital"
+              ],
+              "energy": 7
+            }
+          }
+        ]
+      },
+      {
+        "action": {
+          "kind": "travel",
+          "to": "Posto",
+          "time": 2,
+          "energy": 2
+        },
+        "before": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "after": {
+          "at": "Posto",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "undos_used": 2,
+        "known_blockage": false,
+        "choice": "move_Charging_station",
+        "confidence": 0.28,
+        "probabilities": {
+          "move_Square": 0.05,
+          "move_Shop": 0.44,
+          "undo_1": 0.05,
+          "move_Charging_station": 0.46
+        },
+        "low_confidence": true,
+        "cost": 7.6818e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "recharge",
+          "time": 3
+        },
+        "before": {
+          "at": "Posto",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Posto",
+          "time": 11,
+          "battery": 9,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "undos_used": 2,
+        "known_blockage": false,
+        "choice": "recharge",
+        "confidence": 0.59,
+        "probabilities": {
+          "recharge": 0.69,
+          "undo_1": 0.24,
+          "move_Square": 0.06,
+          "move_Hospital": 0.01
+        },
+        "low_confidence": true,
+        "cost": 7.9632e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "travel",
+          "to": "Loja",
+          "time": 4,
+          "energy": 4
+        },
+        "before": {
+          "at": "Posto",
+          "time": 11,
+          "battery": 9,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 15,
+          "battery": 5,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 11
+        },
+        "undos_used": 2,
+        "known_blockage": true,
+        "choice": "move_Shop",
+        "confidence": 0.57,
+        "probabilities": {
+          "move_Museum": 0.21,
+          "move_Hospital": 0,
+          "undo_1": 0.1,
+          "move_Base": 0.01,
+          "move_Square": 0.04,
+          "move_Shop": 0.64
+        },
+        "low_confidence": true,
+        "cost": 8.589e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "undo",
+          "steps": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 15,
+          "battery": 5,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 11
+        },
+        "after": {
+          "at": "Posto",
+          "time": 11,
+          "battery": 9,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "undos_used": 3,
+        "known_blockage": true,
+        "choice": "undo_1",
+        "confidence": 0.21,
+        "probabilities": {
+          "move_Charging_station": 0.18,
+          "deliver": 0.38,
+          "undo_1": 0.41,
+          "move_Hospital": 0.03
+        },
+        "low_confidence": true,
+        "cost": 8.0934e-05,
+        "undoTargets": [
+          {
+            "before": {
+              "at": "Posto",
+              "time": 11,
+              "battery": 9,
+              "delivered": [
+                "Hospital"
+              ],
+              "energy": 7
+            },
+            "action": {
+              "kind": "travel",
+              "to": "Loja",
+              "time": 4,
+              "energy": 4
+            },
+            "after": {
+              "at": "Loja",
+              "time": 15,
+              "battery": 5,
+              "delivered": [
+                "Hospital"
+              ],
+              "energy": 11
+            }
+          }
+        ]
+      },
+      {
+        "action": {
+          "kind": "travel",
+          "to": "Loja",
+          "time": 4,
+          "energy": 4
+        },
+        "before": {
+          "at": "Posto",
+          "time": 11,
+          "battery": 9,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "after": {
+          "at": "Loja",
+          "time": 15,
+          "battery": 5,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 11
+        },
+        "undos_used": 3,
+        "known_blockage": true,
+        "choice": "move_Shop",
+        "confidence": 0.39,
+        "probabilities": {
+          "move_Hospital": 0.02,
+          "move_Base": 0.02,
+          "move_Shop": 0.51,
+          "move_Museum": 0.34,
+          "move_Square": 0.11
+        },
+        "low_confidence": true,
+        "cost": 7.9422e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Loja",
+          "time": 15,
+          "battery": 5,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 11
+        },
+        "after": {
+          "at": "Loja",
+          "time": 16,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 11
+        },
+        "undos_used": 3,
+        "known_blockage": true,
+        "choice": "deliver",
+        "confidence": 0.45,
+        "probabilities": {
+          "deliver": 0.63,
+          "move_Charging_station": 0.33,
+          "move_Hospital": 0.04
+        },
+        "low_confidence": true,
+        "cost": 7.2786e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "travel",
+          "to": "Posto",
+          "time": 4,
+          "energy": 4
+        },
+        "before": {
+          "at": "Loja",
+          "time": 16,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 11
+        },
+        "after": {
+          "at": "Posto",
+          "time": 20,
+          "battery": 1,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 15
+        },
+        "undos_used": 3,
+        "known_blockage": true,
+        "choice": "move_Charging_station",
+        "confidence": 0.66,
+        "probabilities": {
+          "move_Hospital": 0.17,
+          "move_Charging_station": 0.83
+        },
+        "low_confidence": true,
+        "cost": 7.1106e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "recharge",
+          "time": 3
+        },
+        "before": {
+          "at": "Posto",
+          "time": 20,
+          "battery": 1,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 15
+        },
+        "after": {
+          "at": "Posto",
+          "time": 23,
+          "battery": 9,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 15
+        },
+        "undos_used": 3,
+        "known_blockage": true,
+        "choice": "recharge",
+        "confidence": 1,
+        "probabilities": {
+          "recharge": 1
+        },
+        "low_confidence": false,
+        "cost": 6.7662e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "travel",
+          "to": "Museu",
+          "time": 4,
+          "energy": 4
+        },
+        "before": {
+          "at": "Posto",
+          "time": 23,
+          "battery": 9,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 15
+        },
+        "after": {
+          "at": "Museu",
+          "time": 27,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 19
+        },
+        "undos_used": 3,
+        "known_blockage": true,
+        "choice": "move_Museum",
+        "confidence": 0.85,
+        "probabilities": {
+          "move_Museum": 0.89,
+          "move_Shop": 0,
+          "move_Square": 0.1,
+          "move_Base": 0.01,
+          "move_Hospital": 0
+        },
+        "low_confidence": false,
+        "cost": 8.0598e-05,
+        "undoTargets": null
+      },
+      {
+        "action": {
+          "kind": "deliver",
+          "time": 1
+        },
+        "before": {
+          "at": "Museu",
+          "time": 27,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 19
+        },
+        "after": {
+          "at": "Museu",
+          "time": 28,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja",
+            "Museu"
+          ],
+          "energy": 19
+        },
+        "undos_used": 3,
+        "known_blockage": true,
+        "choice": "deliver",
+        "confidence": 1,
+        "probabilities": {
+          "deliver": 1
+        },
+        "low_confidence": false,
+        "cost": 6.7788e-05,
+        "undoTargets": null
+      }
+    ],
+    "stack": [
+      {
+        "before": {
+          "at": "Base",
+          "time": 0,
+          "battery": 9,
+          "delivered": [],
+          "energy": 0
+        },
+        "action": {
+          "kind": "travel",
+          "to": "Praça",
+          "time": 2,
+          "energy": 2
+        },
+        "after": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        }
+      },
+      {
+        "before": {
+          "at": "Praça",
+          "time": 2,
+          "battery": 7,
+          "delivered": [],
+          "energy": 2
+        },
+        "action": {
+          "kind": "travel",
+          "to": "Hospital",
+          "time": 3,
+          "energy": 3
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        }
+      },
+      {
+        "before": {
+          "at": "Hospital",
+          "time": 5,
+          "battery": 4,
+          "delivered": [],
+          "energy": 5
+        },
+        "action": {
+          "kind": "deliver",
+          "time": 1
+        },
+        "after": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        }
+      },
+      {
+        "before": {
+          "at": "Hospital",
+          "time": 6,
+          "battery": 4,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 5
+        },
+        "action": {
+          "kind": "travel",
+          "to": "Posto",
+          "time": 2,
+          "energy": 2
+        },
+        "after": {
+          "at": "Posto",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        }
+      },
+      {
+        "before": {
+          "at": "Posto",
+          "time": 8,
+          "battery": 2,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "action": {
+          "kind": "recharge",
+          "time": 3
+        },
+        "after": {
+          "at": "Posto",
+          "time": 11,
+          "battery": 9,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        }
+      },
+      {
+        "before": {
+          "at": "Posto",
+          "time": 11,
+          "battery": 9,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 7
+        },
+        "action": {
+          "kind": "travel",
+          "to": "Loja",
+          "time": 4,
+          "energy": 4
+        },
+        "after": {
+          "at": "Loja",
+          "time": 15,
+          "battery": 5,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 11
+        }
+      },
+      {
+        "before": {
+          "at": "Loja",
+          "time": 15,
+          "battery": 5,
+          "delivered": [
+            "Hospital"
+          ],
+          "energy": 11
+        },
+        "action": {
+          "kind": "deliver",
+          "time": 1
+        },
+        "after": {
+          "at": "Loja",
+          "time": 16,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 11
+        }
+      },
+      {
+        "before": {
+          "at": "Loja",
+          "time": 16,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 11
+        },
+        "action": {
+          "kind": "travel",
+          "to": "Posto",
+          "time": 4,
+          "energy": 4
+        },
+        "after": {
+          "at": "Posto",
+          "time": 20,
+          "battery": 1,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 15
+        }
+      },
+      {
+        "before": {
+          "at": "Posto",
+          "time": 20,
+          "battery": 1,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 15
+        },
+        "action": {
+          "kind": "recharge",
+          "time": 3
+        },
+        "after": {
+          "at": "Posto",
+          "time": 23,
+          "battery": 9,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 15
+        }
+      },
+      {
+        "before": {
+          "at": "Posto",
+          "time": 23,
+          "battery": 9,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 15
+        },
+        "action": {
+          "kind": "travel",
+          "to": "Museu",
+          "time": 4,
+          "energy": 4
+        },
+        "after": {
+          "at": "Museu",
+          "time": 27,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 19
+        }
+      },
+      {
+        "before": {
+          "at": "Museu",
+          "time": 27,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja"
+          ],
+          "energy": 19
+        },
+        "action": {
+          "kind": "deliver",
+          "time": 1
+        },
+        "after": {
+          "at": "Museu",
+          "time": 28,
+          "battery": 5,
+          "delivered": [
+            "Hospital",
+            "Loja",
+            "Museu"
+          ],
+          "energy": 19
+        }
+      }
+    ],
+    "cost": 0.001286964,
+    "done": true,
+    "limit": 30,
+    "decision_limit": 30,
+    "undo_limit": 3,
+    "undos_used": 3,
+    "known_blockage": true,
+    "end_reason": "all_delivered"
+  }
+}
